@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Deceivers Robotics FRC match scouting app.">
+    <title>DeceptiveScout</title>
+    <script>
+      (function () {
+        var stored = null;
+        try { stored = localStorage.getItem('deceptivescout-theme'); } catch (e) {}
+        var theme = stored === 'light' || stored === 'dark'
+          ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:ital,wght@0,600;0,700;0,800;1,600;1,700;1,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="./favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-brand">
+        <img src="./assets/logo-mark-white.png" alt="" aria-hidden="true">
+        <span id="header-title" class="header-title">DeceptiveScout</span>
+      </div>
+      <div class="header-actions">
+        <button id="settings-btn" class="icon-btn" type="button" aria-label="Settings">&#9881;</button>
+        <button id="theme-toggle" class="icon-btn" type="button" aria-pressed="false" aria-label="Toggle dark mode">
+          <span class="theme-toggle-track" aria-hidden="true">
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div class="phase-strip">
+      <div id="phase-dots" class="phase-dots" style="display:flex; gap:4px; width:100%;"></div>
+    </div>
+    <p id="phase-label" class="phase-label">Scouter & Team</p>
+
+    <main id="page-shell" class="page-shell">
+      <div id="resume-banner" class="banner banner-info" hidden>
+        <p>Resume your in-progress match from earlier today?</p>
+        <div class="banner-actions">
+          <button id="resume-btn" class="qr-btn" type="button">Resume</button>
+          <button id="discard-btn" class="qr-btn" type="button">Discard</button>
+        </div>
+      </div>
+
+      <section class="page-panel is-active" data-page="prematch">
+        <h1>Scouter &amp; Team</h1>
+        <div id="prematch-validation" class="banner banner-error" hidden></div>
+        <div id="fields-prematch" class="field-list"></div>
+      </section>
+
+      <section class="page-panel" data-page="auto">
+        <h1>Autonomous</h1>
+        <div id="fields-auto" class="field-list"></div>
+      </section>
+
+      <section class="page-panel" data-page="teleop">
+        <h1>Teleop</h1>
+        <div id="fields-teleop" class="field-list"></div>
+      </section>
+
+      <section class="page-panel" data-page="endgame">
+        <h1>Endgame</h1>
+        <div id="fields-endgame" class="field-list"></div>
+      </section>
+
+      <section class="page-panel" data-page="postmatch">
+        <h1>Post-Match</h1>
+        <div id="fields-postmatch" class="field-list"></div>
+      </section>
+
+      <section class="page-panel" data-page="qr">
+        <h1>Submit</h1>
+        <div id="qr-header" class="qr-header"></div>
+        <div id="qr-code-container" class="qr-code-container"></div>
+        <div class="qr-actions">
+          <button id="copy-btn" class="qr-btn" type="button">Copy Data</button>
+          <button id="toggle-raw-btn" class="qr-btn" type="button">Show Raw Data</button>
+        </div>
+        <pre id="raw-data-panel" class="raw-data-panel" hidden></pre>
+        <button id="clear-btn" class="clear-btn" type="button">Clear Form</button>
+      </section>
+    </main>
+
+    <nav class="page-nav">
+      <button id="prev-btn" class="nav-btn nav-btn-prev" type="button">Prev</button>
+      <button id="next-btn" class="nav-btn nav-btn-next" type="button">Next</button>
+    </nav>
+
+    <dialog id="settings-dialog" class="settings-dialog">
+      <div class="dialog-body">
+        <h2>Settings</h2>
+        <p>Enter your team's read-only <a href="https://www.thebluealliance.com/account" target="_blank" rel="noopener">The Blue Alliance API key</a> to auto-fill team numbers from the event schedule. Stored only on this device — never in config files, never sent anywhere except thebluealliance.com.</p>
+        <input id="tba-key-input" class="field-input" type="password" placeholder="TBA Read API Key" autocomplete="off">
+        <div class="dialog-actions">
+          <button id="clear-key-btn" type="button">Clear Key</button>
+          <button id="close-settings-btn" type="button">Cancel</button>
+          <button id="save-key-btn" class="primary" type="button">Save</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="./vendor/qrcode.min.js"></script>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
