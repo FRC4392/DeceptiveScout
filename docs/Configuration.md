@@ -16,34 +16,36 @@ config/<your-config>/
   postmatch.js   # Post-Match page
 ```
 
-Each file is a thin JS wrapper around plain markdown content, one line per array entry — e.g.:
+Each file is a thin JS wrapper around plain markdown content — e.g.:
 
 ```js
-window.DS_CONFIG.pages.auto = [
-  '# Autonomous',
-  '',
-  '- Left Starting Line `type:toggle` `code:all`',
-  ...
-].join('\n');
+window.DS_CONFIG.pages.auto = `
+# Autonomous
+
+- Left Starting Line {type:toggle} {code:all}
+...
+`;
 ```
 
-Only the lines *inside* the array are what you edit day to day — each one is exactly the same markdown-bullet syntax described below. The `.js` wrapper exists so the app can load these files with a plain `<script src="...">` tag: **no server, no build step, no `fetch()`** — the whole app works by just double-clicking `index.html`. (Config used to be plain `.md` files fetched at runtime, but browsers block `fetch()` of local files under `file://`, so that required running a local server. This format removes that requirement entirely.)
+Everything *between the backticks* is what you edit day to day — paste or type it exactly like markdown, no per-line quoting. The `.js` wrapper exists so the app can load these files with a plain `<script src="...">` tag: **no server, no build step, no `fetch()`** — the whole app works by just double-clicking `index.html`. (Config used to be plain `.md` files fetched at runtime, but browsers block `fetch()` of local files under `file://`, so that required running a local server. This format removes that requirement entirely.)
+
+The only two things to avoid inside the content: a literal backtick (`` ` ``), since that's the JS string delimiter, and `${...}` (JS interpolation syntax) — both are exceedingly unlikely to show up in a scouting question.
 
 To switch which config is active, change `CONFIG_SLUG` at the top of `js/app.js` and update the `<script src="./config/...">` paths in `index.html` to point at the new folder.
 
 ## `meta.js`
 
-Global settings, one array entry per line:
+Global settings, one per line:
 
 ```js
-window.DS_CONFIG.meta = [
-  '# DeceptiveScout Config',
-  '',
-  '- `title:Deceivers Robotics | Scouting`',
-  '- `dataFormat:tsv`',
-  '- `checkboxAs:10`',
-  '- `defaultEvent:2026micmp3`',
-].join('\n');
+window.DS_CONFIG.meta = `
+# DeceptiveScout Config
+
+- {title:Deceivers Robotics | Scouting}
+- {dataFormat:tsv}
+- {checkboxAs:10}
+- {defaultEvent:2026micmp3}
+`;
 ```
 
 - `title` — shown in the app header.
@@ -56,12 +58,12 @@ window.DS_CONFIG.meta = [
 Every scouting question is a single markdown bullet:
 
 ```
-- <Label> `type:<fieldtype>` `code:<code>` [`attr:value` ...] [required]
+- <Label> {type:<fieldtype>} {code:<code>} [{attr:value} ...] [required]
 ```
 
-- **Label** — the question text shown to the scouter. Everything before the first backtick-quoted attribute.
-- Each `` `key:value` `` (backticks included) is one attribute. The value is everything after the first colon, so it can itself contain punctuation.
-- The bare word `required` (no backticks) marks the field as required — the app blocks leaving the Scouter & Team page until all required fields are filled.
+- **Label** — the question text shown to the scouter. Everything before the first `{...}` attribute.
+- Each `{key:value}` (curly braces included) is one attribute. The value is everything after the first colon, so it can itself contain punctuation (including `|`).
+- The bare word `required` (no braces) marks the field as required — the app blocks leaving the Scouter & Team page until all required fields are filled.
 - `type` and `code` are **mandatory** on every field. `code` is a short unique id (used internally and in the exported data) — keep it short, no spaces.
 - Lines starting with `#` or `##` are headings and are ignored by the app — use them freely to visually group fields in the file.
 - A blank line is ignored.
@@ -72,25 +74,25 @@ If a field line is missing `type` or `code`, the app doesn't crash — it shows 
 
 ### text
 ```
-- Comments `type:text` `code:co` `size:20` `maxSize:200`
+- Comments {type:text} {code:co} {size:20} {maxSize:200}
 ```
 `size` (display width hint), `maxSize` (character limit), `default` (starting value), `disabled:true` (read-only).
 
 ### number
 ```
-- Match # `type:number` `code:m` `min:1` `max:150` required
+- Match # {type:number} {code:m} {min:1} {max:150} required
 ```
 `min`, `max`, `default`, `disabled:true`.
 
 ### counter
 ```
-- Fuel Scored `type:counter` `code:fs` `default:0` `alt1:5` `alt2:10`
+- Fuel Scored {type:counter} {code:fs} {default:0} {alt1:5} {alt2:10}
 ```
 Renders −/+ buttons. `default` (starting value), `alt1`/`alt2` (extra ± buttons for bigger jumps, e.g. +5/+10).
 
 ### choice
 ```
-- Climb Result `type:choice` `code:cr` `default:x` required
+- Climb Result {type:choice} {code:cr} {default:x} required
   - c | Climbed
   - a | Attempted / Failed
   - x | Not Attempted
@@ -99,25 +101,25 @@ Renders as tappable pill buttons. Choices are an indented sub-list right below t
 
 ### toggle
 ```
-- Crossed Trench `type:toggle` `code:tre`
+- Crossed Trench {type:toggle} {code:tre}
 ```
 A simple on/off switch. `default:true` to start it on.
 
 ### timer
 ```
-- Cargo Cycle Timer `type:timer` `code:ctm`
+- Cargo Cycle Timer {type:timer} {code:ctm}
 ```
 A stopwatch with Start/Stop and Reset.
 
 ### cycletimer
 ```
-- Fuel Cycle `type:cycletimer` `code:fct` `link:fs`
+- Fuel Cycle {type:cycletimer} {code:fct} {link:fs}
 ```
 Like `timer`, but adds "New Cycle" (records the current time to a list and keeps running) and "Undo" (removes the last recorded time). Optional `link:<code>` — the `code` of a `counter` field on the same page — bumps that counter by 1 every time a new cycle is recorded.
 
 ### fieldmap
 ```
-- Auto Start Position `type:fieldmap` `code:asp` `image:assets/field-placeholder.svg` `grid:12x6` `restrict:one` `flip:true` `undo:true` `marker:circle 10 white #1256a8 true` `link:fct`
+- Auto Start Position {type:fieldmap} {code:asp} {image:assets/field-placeholder.svg} {grid:12x6} {restrict:one} {flip:true} {undo:true} {marker:circle 10 white #1256a8 true} {link:fct}
 ```
 Tap a spot on a field diagram to record a grid location.
 - `image` (required) — path to the diagram image (SVG or PNG), relative to the app's root.
@@ -155,6 +157,6 @@ Once a schedule has loaded successfully at least once, it's cached in local stor
 ## Tips
 
 - Keep `code` values short and stable across seasons if you want to compare data — changing a `code` changes the exported column for that field.
-- Test a config change by editing the array entries and reloading the app (just refresh — no server, no build step, no restart needed).
+- Test a config change by editing the text and reloading the app (just refresh — no server, no build step, no restart needed).
 - One typo in a field line only breaks that one field (shown as a "Config error" placeholder), not the whole page.
-- Watch for stray unescaped `'` (single quotes) inside a line if you use single-quoted array entries — swap that entry to double quotes (`"..."`) if your label text needs an apostrophe.
+- Avoid a literal backtick (`` ` ``) or `${...}` anywhere in the content — those are the JS string boundary and interpolation syntax respectively. Everything else (apostrophes, quotes, `#`, `|`, emoji, whatever) is completely safe to type or paste.

@@ -1,9 +1,9 @@
 // Markdown-native config grammar parser.
 //
-// Field line:   - <Label> `type:<t>` `code:<c>` [`attr:value` ...] [required]
+// Field line:   - <Label> {type:<t>} {code:<c>} [{attr:value} ...] [required]
 // Choice sub-list (only consumed when the parent field's type is "choice"):
 //               - <value> | <Label>
-// Meta line:    - `key:value`
+// Meta line:    - {key:value}
 //
 // Never throws on malformed input — a bad line degrades to a warning
 // (skipped) or an inline "Config error" field, so one typo can't blank
@@ -16,9 +16,9 @@ window.DS = window.DS || {};
 const HEADING_RE = /^\s*#/;
 const TOP_BULLET_RE = /^-\s+(.*)$/;
 const SUB_BULLET_RE = /^\s+-\s+(.*)$/;
-const ATTR_TOKEN_RE = /`([^`]+)`/g;
+const ATTR_TOKEN_RE = /\{([^}]+)\}/g;
 const REQUIRED_WORD_RE = /\brequired\b/;
-const META_LINE_RE = /^-\s*`([^`]+)`\s*$/;
+const META_LINE_RE = /^-\s*\{([^}]+)\}\s*$/;
 
 function splitLines(text) {
   return text.split(/\r\n|\r|\n/);
@@ -147,7 +147,7 @@ function parsePageMarkdown(text) {
 }
 
 /**
- * Parse meta's flat `- \`key:value\`` lines into a plain object.
+ * Parse meta's flat `- {key:value}` lines into a plain object.
  * @param {string} text
  * @returns {Record<string, string>}
  */
