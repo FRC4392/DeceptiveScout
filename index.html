@@ -27,7 +27,7 @@
   <body>
     <header class="app-header">
       <div class="header-brand">
-        <img src="./assets/logo-mark-white.png" alt="" aria-hidden="true">
+        <img src="./assets/logo-mark.png" alt="" aria-hidden="true">
         <span id="header-title" class="header-title">DeceptiveScout</span>
       </div>
       <div class="header-actions">
@@ -101,7 +101,7 @@
     <dialog id="settings-dialog" class="settings-dialog">
       <div class="dialog-body">
         <h2>Settings</h2>
-        <p>Enter your team's read-only <a href="https://www.thebluealliance.com/account" target="_blank" rel="noopener">The Blue Alliance API key</a> to auto-fill team numbers from the event schedule. Stored only on this device — never in config files, never sent anywhere except thebluealliance.com.</p>
+        <p>Most devices already have TBA autofill working out of the box via a team-wide key. Only enter a <a href="https://www.thebluealliance.com/account" target="_blank" rel="noopener">The Blue Alliance API key</a> here if you want to override it on this device. Stored only on this device — never sent anywhere except thebluealliance.com.</p>
         <input id="tba-key-input" class="field-input" type="password" placeholder="TBA Read API Key" autocomplete="off">
         <div class="dialog-actions">
           <button id="clear-key-btn" type="button">Clear Key</button>
@@ -112,6 +112,29 @@
     </dialog>
 
     <script src="./vendor/qrcode.min.js"></script>
-    <script type="module" src="./js/app.js"></script>
+
+    <!-- Scouting config: plain-JS-wrapped markdown, loaded as globals so no
+         server/fetch is needed — the app works by opening this file directly. -->
+    <script src="./config/2026-example/meta.js"></script>
+    <script src="./config/2026-example/prematch.js"></script>
+    <script src="./config/2026-example/auto.js"></script>
+    <script src="./config/2026-example/teleop.js"></script>
+    <script src="./config/2026-example/endgame.js"></script>
+    <script src="./config/2026-example/postmatch.js"></script>
+
+    <!-- Optional, gitignored: sets window.DS_CONFIG.tbaKey so every device
+         gets TBA autofill without entering a key. Missing file is a no-op. -->
+    <script src="./local-config.js"></script>
+
+    <script src="./js/parser.js"></script>
+    <script src="./js/fields/counter.js"></script>
+    <script src="./js/fields/timer.js"></script>
+    <script src="./js/fields/field-image.js"></script>
+    <script src="./js/render.js"></script>
+    <script src="./js/data.js"></script>
+    <script src="./js/qr.js"></script>
+    <script src="./js/tba.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/app.js"></script>
   </body>
 </html>

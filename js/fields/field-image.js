@@ -1,4 +1,7 @@
-export function renderFieldMap(wrap, def, ctx) {
+window.DS = window.DS || {};
+DS.fields = DS.fields || {};
+
+DS.fields.renderFieldMap = function renderFieldMap(wrap, def, ctx) {
   const [cols, rows] = (def.attrs.grid || '12x6').split(/x/i).map(Number);
   const restrict = def.attrs.restrict || 'none';
   const toggle = def.attrs.toggle === 'true';
@@ -128,4 +131,4 @@ export function renderFieldMap(wrap, def, ctx) {
 
   wrap.append(btnRow, canvas);
   ctx.state.seed(def.code, boxes.slice());
-}
+};

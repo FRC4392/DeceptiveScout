@@ -1,6 +1,10 @@
+window.DS = window.DS || {};
+
+(function () {
+
 let qrInstance = null;
 
-export function initQr(container) {
+function initQr(container) {
   container.innerHTML = '';
   qrInstance = new window.QRCode(container, {
     text: ' ',
@@ -10,11 +14,15 @@ export function initQr(container) {
   });
 }
 
-export function updateQr(text) {
+function updateQr(text) {
   if (!qrInstance) return;
   qrInstance.makeCode(text || ' ');
 }
 
-export function clearQr() {
+function clearQr() {
   qrInstance?.clear();
 }
+
+DS.qr = { initQr, updateQr, clearQr };
+
+})();

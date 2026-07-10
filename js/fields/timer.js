@@ -1,4 +1,9 @@
-export function renderTimer(wrap, def, ctx, opts = {}) {
+window.DS = window.DS || {};
+DS.fields = DS.fields || {};
+
+(function () {
+
+function renderTimer(wrap, def, ctx, opts = {}) {
   const state = { running: false, elapsedMs: 0, startedAt: null, rafId: null };
 
   if (!opts.suppressStateWrite) {
@@ -100,7 +105,7 @@ export function renderTimer(wrap, def, ctx, opts = {}) {
   return { start, stop, reset, lap, getElapsedSeconds, isRunning: () => state.running };
 }
 
-export function renderCycleTimer(wrap, def, ctx) {
+function renderCycleTimer(wrap, def, ctx) {
   const timerApi = renderTimer(wrap, def, ctx, { suppressStateWrite: true });
 
   const storedCycles = ctx.state.get(def.code);
@@ -148,3 +153,8 @@ export function renderCycleTimer(wrap, def, ctx) {
 
   ctx.registerLinkTarget(def.code, { newCycle: commit });
 }
+
+DS.fields.renderTimer = renderTimer;
+DS.fields.renderCycleTimer = renderCycleTimer;
+
+})();

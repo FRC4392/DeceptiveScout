@@ -1,12 +1,13 @@
-import { parsePageMarkdown, parseMeta } from './parser.js';
-import { renderPage } from './render.js';
-import { collectData, serialize } from './data.js';
-import { initQr, updateQr } from './qr.js';
-import { getTbaKey, setTbaKey, loadEventData, lookupTeamFromSchedule } from './tba.js';
-import { initThemeToggle } from './theme.js';
+window.DS = window.DS || {};
+
+const { parsePageMarkdown, parseMeta } = DS.parser;
+const { renderPage } = DS.render;
+const { collectData, serialize } = DS.data;
+const { initQr, updateQr } = DS.qr;
+const { getTbaKey, setTbaKey, loadEventData, lookupTeamFromSchedule } = DS.tba;
+const { initThemeToggle } = DS.theme;
 
 const CONFIG_SLUG = '2026-example';
-const CONFIG_BASE = `config/${CONFIG_SLUG}/`;
 const DATA_PAGES = ['prematch', 'auto', 'teleop', 'endgame', 'postmatch'];
 const PAGE_ORDER = [...DATA_PAGES, 'qr'];
 const PAGE_TITLES = {
@@ -30,14 +31,18 @@ const scoutState = {
 };
 
 // ---------- Config loading ----------
+// Config content is embedded as plain JS strings (window.DS_CONFIG, set by
+// the config/*.js files loaded via <script> tags before this file) rather
+// than fetched at runtime — fetch() of local files is blocked by browsers
+// under file://, and this way the app works by simply opening index.html,
+// no server required.
 
-async function loadConfig() {
-  const metaText = await (await fetch(CONFIG_BASE + 'meta.md')).text();
-  const meta = parseMeta(metaText);
+function loadConfig() {
+  const cfg = window.DS_CONFIG || {};
+  const meta = parseMeta(cfg.meta || '');
   const pageDefs = {};
   for (const page of DATA_PAGES) {
-    const text = await (await fetch(`${CONFIG_BASE}${page}.md`)).text();
-    pageDefs[page] = parsePageMarkdown(text);
+    pageDefs[page] = parsePageMarkdown((cfg.pages && cfg.pages[page]) || '');
   }
   return { meta, pageDefs };
 }
@@ -433,8 +438,8 @@ function setupSettingsDialog() {
 
 // ---------- Boot ----------
 
-async function boot() {
-  const { meta, pageDefs } = await loadConfig();
+function boot() {
+  const { meta, pageDefs } = loadConfig();
   scoutState.meta = meta;
   scoutState.pageDefs = pageDefs;
 

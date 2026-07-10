@@ -1,4 +1,8 @@
-export const PAGE_ORDER = ['prematch', 'auto', 'teleop', 'endgame', 'postmatch'];
+window.DS = window.DS || {};
+
+(function () {
+
+const PAGE_ORDER = ['prematch', 'auto', 'teleop', 'endgame', 'postmatch'];
 
 const CHECKBOX_CHARS = {
   YN: ['Y', 'N'],
@@ -14,7 +18,7 @@ function sanitize(str) {
  * Walk scoutState.values in field-definition order across all pages and
  * produce an ordered [{code, value}] list ready for serialization.
  */
-export function collectData(scoutState, checkboxAs) {
+function collectData(scoutState, checkboxAs) {
   const [onChar, offChar] = CHECKBOX_CHARS[checkboxAs] || CHECKBOX_CHARS['10'];
   const parts = [];
 
@@ -36,7 +40,11 @@ export function collectData(scoutState, checkboxAs) {
   return parts;
 }
 
-export function serialize(parts, format) {
+function serialize(parts, format) {
   if (format === 'kvs') return parts.map((p) => `${p.code}=${p.value}`).join(';');
   return parts.map((p) => p.value).join('\t');
 }
+
+DS.data = { PAGE_ORDER, collectData, serialize };
+
+})();

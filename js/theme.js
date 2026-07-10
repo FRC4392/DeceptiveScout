@@ -1,3 +1,7 @@
+window.DS = window.DS || {};
+
+(function () {
+
 const STORAGE_KEY = 'deceptivescout-theme';
 
 function getStoredTheme() {
@@ -20,7 +24,7 @@ function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
 }
 
-export function initThemeToggle(button) {
+function initThemeToggle(button) {
   const current = () => document.documentElement.getAttribute('data-theme') || 'light';
 
   button.setAttribute('aria-pressed', String(current() === 'dark'));
@@ -41,3 +45,7 @@ export function initThemeToggle(button) {
     });
   }
 }
+
+DS.theme = { initThemeToggle };
+
+})();

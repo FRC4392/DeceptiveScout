@@ -1,4 +1,7 @@
-export function renderCounter(wrap, def, ctx) {
+window.DS = window.DS || {};
+DS.fields = DS.fields || {};
+
+DS.fields.renderCounter = function renderCounter(wrap, def, ctx) {
   const group = document.createElement('div');
   group.className = 'counter-group';
 
@@ -46,4 +49,4 @@ export function renderCounter(wrap, def, ctx) {
       commit();
     },
   });
-}
+};

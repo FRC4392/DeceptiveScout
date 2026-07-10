@@ -1,6 +1,6 @@
 # DeceptiveScout Configuration Guide
 
-DeceptiveScout is configured entirely through plain markdown files — no code changes are needed to add, remove, or change scouting questions. This document is the reference for the grammar those files use.
+DeceptiveScout is configured entirely through plain markdown-style content — no code changes are needed to add, remove, or change scouting questions. This document is the reference for the grammar those files use.
 
 ## Overview
 
@@ -8,25 +8,42 @@ A **config folder** (e.g. `config/2026-example/`) holds six files:
 
 ```
 config/<your-config>/
-  meta.md        # global settings
-  prematch.md    # Scouter & Team page
-  auto.md        # Autonomous page
-  teleop.md      # Teleop page
-  endgame.md     # Endgame page
-  postmatch.md   # Post-Match page
+  meta.js        # global settings
+  prematch.js    # Scouter & Team page
+  auto.js        # Autonomous page
+  teleop.js      # Teleop page
+  endgame.js     # Endgame page
+  postmatch.js   # Post-Match page
 ```
 
-The app fetches these files at load time (this means the app must be served over `http://`/`https://`, not opened directly as a `file://` — run `python3 -m http.server` locally, or use GitHub Pages). To switch which config is active, change `CONFIG_SLUG` at the top of `js/app.js`.
+Each file is a thin JS wrapper around plain markdown content, one line per array entry — e.g.:
 
-## `meta.md`
+```js
+window.DS_CONFIG.pages.auto = [
+  '# Autonomous',
+  '',
+  '- Left Starting Line `type:toggle` `code:all`',
+  ...
+].join('\n');
+```
 
-Global settings, one per line:
+Only the lines *inside* the array are what you edit day to day — each one is exactly the same markdown-bullet syntax described below. The `.js` wrapper exists so the app can load these files with a plain `<script src="...">` tag: **no server, no build step, no `fetch()`** — the whole app works by just double-clicking `index.html`. (Config used to be plain `.md` files fetched at runtime, but browsers block `fetch()` of local files under `file://`, so that required running a local server. This format removes that requirement entirely.)
 
-```markdown
-- `title:Deceivers Robotics | Scouting`
-- `dataFormat:tsv`
-- `checkboxAs:10`
-- `defaultEvent:2026micmp3`
+To switch which config is active, change `CONFIG_SLUG` at the top of `js/app.js` and update the `<script src="./config/...">` paths in `index.html` to point at the new folder.
+
+## `meta.js`
+
+Global settings, one array entry per line:
+
+```js
+window.DS_CONFIG.meta = [
+  '# DeceptiveScout Config',
+  '',
+  '- `title:Deceivers Robotics | Scouting`',
+  '- `dataFormat:tsv`',
+  '- `checkboxAs:10`',
+  '- `defaultEvent:2026micmp3`',
+].join('\n');
 ```
 
 - `title` — shown in the app header.
@@ -124,10 +141,20 @@ Add an optional `role:` attribute to mark a field as one of the six fields the a
 | `robot`   | robot slot (`r1`/`b1`/`r2`/`b2`/`r3`/`b3`)   |
 | `team`    | team number (auto-filled from TBA if configured) |
 
-See `config/2026-example/prematch.md` for the full worked example.
+See `config/2026-example/prematch.js` for the full worked example.
+
+## The Blue Alliance API key
+
+TBA autofill (matching a scouted robot to its team number from the published event schedule) needs a free read-only API key from https://www.thebluealliance.com/account. There are two ways to set it:
+
+- **Team-wide default (recommended)** — copy `local-config.example.js` to `local-config.js` (same folder as `index.html`) and paste the key in. `local-config.js` is gitignored, so it's never committed; every scouter who gets a copy of the app folder (or loads it from wherever it's hosted) automatically has TBA working with no per-device setup.
+- **Per-device override** — the gear icon in the app header opens a Settings dialog where an individual can enter their own key, stored only in that browser's local storage. This takes priority over the team-wide default on that device.
+
+Once a schedule has loaded successfully at least once, it's cached in local storage per event, so autofill keeps working even if the device goes offline later in the day (e.g. no signal in the stands).
 
 ## Tips
 
 - Keep `code` values short and stable across seasons if you want to compare data — changing a `code` changes the exported column for that field.
-- Test a config change by editing the `.md` file and reloading the app (`python3 -m http.server` + refresh) — no build step, no restart needed.
+- Test a config change by editing the array entries and reloading the app (just refresh — no server, no build step, no restart needed).
 - One typo in a field line only breaks that one field (shown as a "Config error" placeholder), not the whole page.
+- Watch for stray unescaped `'` (single quotes) inside a line if you use single-quoted array entries — swap that entry to double quotes (`"..."`) if your label text needs an apostrophe.

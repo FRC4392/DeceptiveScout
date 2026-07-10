@@ -9,6 +9,10 @@
 // (skipped) or an inline "Config error" field, so one typo can't blank
 // an entire page.
 
+window.DS = window.DS || {};
+
+(function () {
+
 const HEADING_RE = /^\s*#/;
 const TOP_BULLET_RE = /^-\s+(.*)$/;
 const SUB_BULLET_RE = /^\s+-\s+(.*)$/;
@@ -66,7 +70,7 @@ function configErrorField(code, message) {
  * @param {string} text
  * @returns {Array<object>} field definitions
  */
-export function parsePageMarkdown(text) {
+function parsePageMarkdown(text) {
   const lines = splitLines(text);
   const fields = [];
   let i = 0;
@@ -143,11 +147,11 @@ export function parsePageMarkdown(text) {
 }
 
 /**
- * Parse meta.md's flat `- \`key:value\`` lines into a plain object.
+ * Parse meta's flat `- \`key:value\`` lines into a plain object.
  * @param {string} text
  * @returns {Record<string, string>}
  */
-export function parseMeta(text) {
+function parseMeta(text) {
   const meta = {};
   for (const rawLine of splitLines(text)) {
     const line = rawLine.trim();
@@ -162,3 +166,7 @@ export function parseMeta(text) {
   }
   return meta;
 }
+
+DS.parser = { parsePageMarkdown, parseMeta };
+
+})();

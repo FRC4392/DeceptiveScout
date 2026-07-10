@@ -1,6 +1,10 @@
-import { renderCounter } from './fields/counter.js';
-import { renderTimer, renderCycleTimer } from './fields/timer.js';
-import { renderFieldMap } from './fields/field-image.js';
+window.DS = window.DS || {};
+
+(function () {
+
+const { renderCounter } = DS.fields;
+const { renderTimer, renderCycleTimer } = DS.fields;
+const { renderFieldMap } = DS.fields;
 
 function renderText(wrap, def, ctx) {
   const input = document.createElement('input');
@@ -103,7 +107,7 @@ function errorNode(message) {
   return p;
 }
 
-export function renderField(container, fieldDef, ctx) {
+function renderField(container, fieldDef, ctx) {
   const wrap = document.createElement('div');
   wrap.className = `field field-${fieldDef.type}`;
   if (fieldDef.error) wrap.classList.add('field-error');
@@ -169,7 +173,11 @@ function renderToggleWithLabel(wrap, def, ctx) {
   wrap.appendChild(row);
 }
 
-export function renderPage(container, fieldDefs, ctx) {
+function renderPage(container, fieldDefs, ctx) {
   container.innerHTML = '';
   for (const def of fieldDefs) renderField(container, def, ctx);
 }
+
+DS.render = { renderField, renderPage };
+
+})();
