@@ -31,7 +31,18 @@ Everything *between the backticks* is what you edit day to day — paste or type
 
 The only two things to avoid inside the content: a literal backtick (`` ` ``), since that's the JS string delimiter, and `${...}` (JS interpolation syntax) — both are exceedingly unlikely to show up in a scouting question.
 
-To switch which config is active, change `CONFIG_SLUG` at the top of `js/app.js` and update the `<script src="./config/...">` paths in `index.html` to point at the new folder.
+## Multiple configs / switching seasons
+
+`config/` can hold as many config folders as you want — one per season, one per game, whatever's useful (`2026-example/`, `2027-newgame/`, ...). Only one is *active* at a time, picked by a single file:
+
+```js
+// config/active.js
+window.DS_ACTIVE_CONFIG = '2026-example';
+```
+
+To add next year's game: copy `config/2026-example/` to a new folder (e.g. `config/2027-newgame/`), edit its six files for the new game, then change the slug in `config/active.js` to point at it. That's the only file that needs to change — `index.html` and the app code stay untouched.
+
+Under the hood, `js/config-loader.js` reads `DS_ACTIVE_CONFIG` and loads that folder's six files dynamically (still no `fetch()`, still works via `file://`) — `index.html` never hardcodes a config path.
 
 ## `meta.js`
 

@@ -7,7 +7,7 @@ const { initQr, updateQr } = DS.qr;
 const { getTbaKey, setTbaKey, loadEventData, lookupTeamFromSchedule } = DS.tba;
 const { initThemeToggle } = DS.theme;
 
-const CONFIG_SLUG = '2026-example';
+const CONFIG_SLUG = window.DS_ACTIVE_CONFIG || '2026-example';
 const DATA_PAGES = ['prematch', 'auto', 'teleop', 'endgame', 'postmatch'];
 const PAGE_ORDER = [...DATA_PAGES, 'qr'];
 const PAGE_TITLES = {
@@ -461,4 +461,22 @@ function boot() {
   maybeShowResumeBanner();
 }
 
-document.addEventListener('DOMContentLoaded', boot);
+// Config files load in parallel via dynamically injected <script> tags
+// (js/config-loader.js) and may finish before or after DOMContentLoaded —
+// wait for both before booting.
+let domReady = false;
+let configReady = false;
+
+function maybeBoot() {
+  if (domReady && configReady) boot();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  domReady = true;
+  maybeBoot();
+});
+
+DS.onConfigReady(() => {
+  configReady = true;
+  maybeBoot();
+});

@@ -5,6 +5,10 @@
   --blue-core: #004392;
   --blue-deep: #00305f;
   --blue-navy: #001730;
+  /* Intentionally constant across themes: used for text/icons sitting on
+     saturated brand-color surfaces (header, primary buttons, selected
+     pills) that stay the same blue in both themes. --surface is the token
+     for backgrounds that should actually invert with the theme. */
   --white: #ffffff;
   --paper: #f7f9fb;
   --line: #dfe5ea;
@@ -39,7 +43,6 @@
   --blue-core: #2f6fc4;
   --blue-deep: #1c4e93;
   --blue-navy: #0a1830;
-  --white: #0e1622;
   --paper: #121c2a;
   --line: #26384e;
   --line-soft: #1b2735;

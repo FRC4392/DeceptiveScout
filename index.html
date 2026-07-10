@@ -113,14 +113,9 @@
 
     <script src="./vendor/qrcode.min.js"></script>
 
-    <!-- Scouting config: plain-JS-wrapped markdown, loaded as globals so no
-         server/fetch is needed — the app works by opening this file directly. -->
-    <script src="./config/2026-example/meta.js"></script>
-    <script src="./config/2026-example/prematch.js"></script>
-    <script src="./config/2026-example/auto.js"></script>
-    <script src="./config/2026-example/teleop.js"></script>
-    <script src="./config/2026-example/endgame.js"></script>
-    <script src="./config/2026-example/postmatch.js"></script>
+    <!-- Picks which config/<slug>/ folder is active; edit this one file to
+         switch seasons/games. -->
+    <script src="./config/active.js"></script>
 
     <!-- Optional, gitignored: sets window.DS_CONFIG.tbaKey so every device
          gets TBA autofill without entering a key. Missing file is a no-op. -->
@@ -135,6 +130,11 @@
     <script src="./js/qr.js"></script>
     <script src="./js/tba.js"></script>
     <script src="./js/theme.js"></script>
+
+    <!-- Dynamically loads the active config folder's 6 files as globals —
+         no server/fetch needed, so the app works by opening this file
+         directly. Must run before app.js. -->
+    <script src="./js/config-loader.js"></script>
     <script src="./js/app.js"></script>
   </body>
 </html>
