@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; let in-progress runs finish instead of
+# canceling them, so a live site is never left half-deployed.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Generates the team-wide TBA key file from a repo Secret at deploy
+      # time, so the raw key never enters git history — only this ephemeral
+      # checkout on the runner, and the resulting static files served by
+      # Pages. See docs/Configuration.md for how to set the secret.
+      - name: Generate local-config.js from the TBA_API_KEY secret
+        env:
+          TBA_API_KEY: ${{ secrets.TBA_API_KEY }}
+        run: |
+          printf 'window.DS_CONFIG = window.DS_CONFIG || {};\nwindow.DS_CONFIG.tbaKey = "%s";\n' "$TBA_API_KEY" > local-config.js
+
+      - name: Remove files that shouldn't ship to the live site
+        run: rm -rf .git .github
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

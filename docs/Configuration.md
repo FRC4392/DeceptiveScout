@@ -147,12 +147,25 @@ See `config/2026-example/prematch.js` for the full worked example.
 
 ## The Blue Alliance API key
 
-TBA autofill (matching a scouted robot to its team number from the published event schedule) needs a free read-only API key from https://www.thebluealliance.com/account. There are two ways to set it:
+TBA autofill (matching a scouted robot to its team number from the published event schedule) needs a free read-only API key from https://www.thebluealliance.com/account. There are three ways to set it, depending on how the app is being run:
 
-- **Team-wide default (recommended)** — copy `local-config.example.js` to `local-config.js` (same folder as `index.html`) and paste the key in. `local-config.js` is gitignored, so it's never committed; every scouter who gets a copy of the app folder (or loads it from wherever it's hosted) automatically has TBA working with no per-device setup.
-- **Per-device override** — the gear icon in the app header opens a Settings dialog where an individual can enter their own key, stored only in that browser's local storage. This takes priority over the team-wide default on that device.
+- **Running locally / hosting the folder yourself (e.g. `python3 -m http.server`)** — copy `local-config.example.js` to `local-config.js` (same folder as `index.html`) and paste the key in. `local-config.js` is gitignored, so it's never committed; every scouter who gets a copy of the app folder automatically has TBA working with no per-device setup.
+- **Deployed on GitHub Pages (recommended for a team-wide site)** — see "Deploying to GitHub Pages" below. The key lives in a GitHub Actions secret, not in the repo, and is injected into the deployed site at deploy time.
+- **Per-device override** — the gear icon in the app header opens a Settings dialog where an individual can enter their own key, stored only in that browser's local storage. This takes priority over any team-wide default on that device, and is the only option if neither of the above has been set up.
 
 Once a schedule has loaded successfully at least once, it's cached in local storage per event, so autofill keeps working even if the device goes offline later in the day (e.g. no signal in the stands).
+
+## Deploying to GitHub Pages
+
+`.github/workflows/deploy-pages.yml` deploys the site to GitHub Pages automatically on every push to `main`. Static hosting has no server, so there's no place to store a secret that's truly hidden from site visitors — anything shipped to the deployed files is visible via the browser's dev tools regardless of mechanism. This workflow's job is narrower: keep the raw key out of the **repo and git history**, generating it fresh into the deployed output at deploy time instead.
+
+One-time setup:
+
+1. In the repo's GitHub Settings → **Secrets and variables → Actions**, add a new repository secret named `TBA_API_KEY` with your team's TBA read key as the value.
+2. In Settings → **Pages**, set "Build and deployment → Source" to **GitHub Actions** (not "Deploy from a branch").
+3. Push to `main` (or run the workflow manually from the Actions tab). The workflow writes `local-config.js` from the secret, strips `.git`/`.github` from the published output, and deploys.
+
+To rotate the key later, just update the `TBA_API_KEY` secret and re-run the workflow (or push again) — no code changes needed.
 
 ## Tips
 
