@@ -60,6 +60,12 @@ function createPageContext(page) {
   const ctx = {
     state: {
       get: (code) => scoutState.values.get(code),
+      // Used by field renderers to prime their initial/default DOM value —
+      // must not trigger persistence, or simply loading a page (before the
+      // scouter has entered anything) would write a "saved match" record.
+      seed: (code, value) => {
+        scoutState.values.set(code, value);
+      },
       set: (code, value) => {
         scoutState.values.set(code, value);
         schedulePersist();

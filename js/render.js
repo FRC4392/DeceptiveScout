@@ -11,7 +11,7 @@ function renderText(wrap, def, ctx) {
   if (def.attrs.disabled === 'true') input.disabled = true;
   const initial = ctx.state.get(def.code);
   input.value = initial !== undefined ? initial : def.attrs.default || '';
-  ctx.state.set(def.code, input.value);
+  ctx.state.seed(def.code, input.value);
   input.addEventListener('input', () => ctx.state.set(def.code, input.value));
   wrap.appendChild(input);
 }
@@ -28,7 +28,7 @@ function renderNumber(wrap, def, ctx) {
   const initial = ctx.state.get(def.code);
   const startValue = initial !== undefined ? initial : def.attrs.default || '';
   input.value = startValue;
-  ctx.state.set(def.code, startValue === '' ? '' : Number(startValue));
+  ctx.state.seed(def.code, startValue === '' ? '' : Number(startValue));
   input.addEventListener('input', () => {
     ctx.state.set(def.code, input.value === '' ? '' : Number(input.value));
   });
@@ -66,7 +66,7 @@ function renderChoice(wrap, def, ctx) {
 
   pills.forEach((btn) => group.appendChild(btn));
   wrap.appendChild(group);
-  ctx.state.set(def.code, selected);
+  ctx.state.seed(def.code, selected);
 }
 
 function renderToggle(wrap, def, ctx) {
@@ -93,7 +93,7 @@ function renderToggle(wrap, def, ctx) {
   });
 
   wrap.appendChild(btn);
-  ctx.state.set(def.code, checked);
+  ctx.state.seed(def.code, checked);
 }
 
 function errorNode(message) {

@@ -38,7 +38,7 @@ export function renderCounter(wrap, def, ctx) {
   if (alt2) group.appendChild(makeBtn(`+${alt2}`, alt2, 'counter-btn-alt'));
 
   wrap.appendChild(group);
-  ctx.state.set(def.code, value);
+  ctx.state.seed(def.code, value);
 
   ctx.registerLinkTarget(def.code, {
     bump(delta) {

@@ -52,8 +52,10 @@ export function renderFieldMap(wrap, def, ctx) {
       c.rotate(Math.PI);
     }
     c.drawImage(img, 0, 0, displayWidth, displayHeight);
-    c.restore();
 
+    // Markers are drawn inside the same (possibly flipped) transform as the
+    // image, so a box's marker stays visually attached to its physical
+    // field location regardless of flip state.
     for (const box of boxes) {
       const { x, y } = centerOfBox(box, displayWidth, displayHeight);
       c.beginPath();
@@ -66,6 +68,7 @@ export function renderFieldMap(wrap, def, ctx) {
       }
       c.stroke();
     }
+    c.restore();
   }
 
   function handleClick(evt) {
@@ -124,5 +127,5 @@ export function renderFieldMap(wrap, def, ctx) {
   }
 
   wrap.append(btnRow, canvas);
-  ctx.state.set(def.code, boxes.slice());
+  ctx.state.seed(def.code, boxes.slice());
 }

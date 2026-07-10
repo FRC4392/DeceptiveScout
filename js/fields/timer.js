@@ -95,7 +95,7 @@ export function renderTimer(wrap, def, ctx, opts = {}) {
   wrap.append(display, controls);
   paint();
 
-  if (!opts.suppressStateWrite) ctx.state.set(def.code, getElapsedSeconds());
+  if (!opts.suppressStateWrite) ctx.state.seed(def.code, getElapsedSeconds());
 
   return { start, stop, reset, lap, getElapsedSeconds, isRunning: () => state.running };
 }
@@ -123,7 +123,7 @@ export function renderCycleTimer(wrap, def, ctx) {
   undoBtn.textContent = 'Undo';
 
   function updateDisplay() {
-    cycleList.textContent = cycles.length ? cycles.join(', ') : '—';
+    cycleList.textContent = cycles.length ? cycles.map((c) => c.toFixed(1)).join(', ') : '—';
     ctx.state.set(def.code, cycles.slice());
   }
 
@@ -143,7 +143,8 @@ export function renderCycleTimer(wrap, def, ctx) {
 
   controls.append(newCycleBtn, undoBtn);
   wrap.append(cycleList, controls);
-  updateDisplay();
+  cycleList.textContent = cycles.length ? cycles.map((c) => c.toFixed(1)).join(', ') : '—';
+  ctx.state.seed(def.code, cycles.slice());
 
   ctx.registerLinkTarget(def.code, { newCycle: commit });
 }
